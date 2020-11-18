@@ -25,10 +25,10 @@ then
     echo "No IP provided. Skipping firewall setup."
   else
     # Allow SSH if connected through SSH to avoid connection disruption
-    [ -z "$SSH_CLIENT" ] || ufw allow OpenSSH
-    ufw allow from "$ALLOWIP" to any app Samba
-    ufw enable
-    ufw status
+    [ -z "$SSH_CLIENT" ] || sudo ufw allow OpenSSH
+    sudo ufw allow from "$ALLOWIP" to any app Samba
+    sudo ufw enable
+    sudo ufw status
   fi
   echo "Done!"
   echo
@@ -38,7 +38,7 @@ fi
 echo "Setting Samba..."
 
 # Backup original conf file
-cp /etc/samba/smb.conf{,.bak}
+sudo cp /etc/samba/smb.conf{,.bak}
 
 echo
 read -p 'Server name: ' SERVERNAME
@@ -65,13 +65,13 @@ cat <<EOF
         read only = no
         valid users = $USER
 EOF
-) > /etc/samba/smb.conf
+) | sudo tee /etc/samba/smb.conf
 
 # Verifying setup
 testparm
 
 # Setting user in Samba
-usermod -a -G sambashare "$USER"
+sudo usermod -a -G sambashare "$USER"
 sudo smbpasswd -a "$USER"
 sudo smbpasswd -e "$USER"
 
