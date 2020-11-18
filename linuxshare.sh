@@ -44,7 +44,8 @@ echo
 read -p 'Server name: ' SERVERNAME
 echo
 
-INTERFACES=$(ifconfig | grep flags | awk -F: '{ print $1 }' | tr '\n' ' ')
+# https://serverfault.com/a/845116 with a tweak
+INTERFACES=$(ip link | awk -F ": " '$0 !~ "vir|wl|^[^0-9]"{print $2;getline}' | tr '\n ' ' ')
 
 (
 cat <<EOF
